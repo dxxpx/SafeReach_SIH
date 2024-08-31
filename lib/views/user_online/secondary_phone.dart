@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:hackfest/views/user_online/additional_details.dart';
+import 'package:sr/views/user_online/additional_details.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:telephony/telephony.dart';
 
 import '../../viewmodels/changes.dart';
-import '../Uicomponents.dart';
+import 'Uicomponents.dart';
 
 class SecondaryPhone extends StatefulWidget {
   @override

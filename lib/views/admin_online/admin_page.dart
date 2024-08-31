@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hackfest/views/admin_online/admin_welcome_page.dart';
+import 'package:sr/views/admin_online/admin_welcome_page.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-import '../Uicomponents.dart';
-
-Color _blue = Color(0XFF4D88D7);
+import '../user_online/Uicomponents.dart';
 
 class AdminPage extends StatefulWidget {
   @override

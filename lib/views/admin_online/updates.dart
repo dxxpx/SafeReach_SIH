@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:hackfest/services/service_imp.dart';
-import 'package:hackfest/views/admin_online/add_warning_page.dart';
-import '../Uicomponents.dart';
+import 'package:sr/services/service_imp.dart';
+import 'package:sr/views/admin_online/add_warning_page.dart';
+
+import '../user_online/Uicomponents.dart';
 
 class Updates extends StatefulWidget {
   const Updates({Key? key}) : super(key: key);
