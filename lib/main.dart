@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sr/viewmodels/changes.dart';
-// import 'package:sr/views/user_online/register_page.dart';
+import 'package:sr/views/user_online/register_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
