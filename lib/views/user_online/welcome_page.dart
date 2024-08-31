@@ -3,26 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:hackfest/services/service_imp.dart';
-import 'package:hackfest/views/Uicomponents.dart';
-import 'package:hackfest/views/admin_online/placeScreen.dart';
-import 'package:hackfest/views/dialog_flow.dart';
-import 'package:hackfest/views/disaster.dart';
-import 'package:hackfest/views/emergency_contact.dart';
-import 'package:hackfest/views/user_offline/user_offline.dart';
-import 'package:hackfest/views/user_online/battery.dart';
-import 'package:hackfest/views/user_online/buy.dart';
-import 'package:hackfest/views/user_online/leaderboardPage.dart';
-import 'package:hackfest/views/user_online/maps_markers.dart';
-import 'package:hackfest/views/user_online/my_problems.dart';
-import 'package:hackfest/views/user_online/register_page.dart';
-import 'package:hackfest/views/user_online/rescue.dart';
+import 'package:sr/services/service_imp.dart';
+// import 'package:sr/views/disaster.dart';
+import 'package:sr/views/emergency_contact.dart';
+import 'package:sr/views/user_offline/user_offline.dart';
+// import 'package:sr/views/user_online/battery.dart';
+import 'package:sr/views/user_online/buy.dart';
+import 'package:sr/views/user_online/maps_markers.dart';
+import 'package:sr/views/user_online/register_page.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import '../admin_online/add_provisions.dart';
-import 'package:hackfest/views/admin_online/showProvisions.dart';
+import 'package:sr/views/user_online/rescue.dart';
 
 import '../datascrape.dart';
-import 'insurancePage.dart';
+import '../disaster.dart';
+import 'Uicomponents.dart';
 //Added components page
 
 class WelcomePage extends StatefulWidget {
@@ -47,7 +41,7 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
           return AlertDialog(
             title: Text('Battery Status'),
             actions: [
-              BatteryIndicator(battery: _battery),
+              // BatteryIndicator(battery: _battery),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -404,13 +398,13 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
               child: Icon(Icons.call),
             ),
           ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => DialogFlow()));
-            },
-            child: Icon(Icons.chat_rounded),
-          ),
+          // FloatingActionButton(
+          //   onPressed: () {
+          //     Navigator.of(context)
+          //         .push(MaterialPageRoute(builder: (context) => DialogFlow()));
+          //   },
+          //   child: Icon(Icons.chat_rounded),
+          // ),
         ],
       ),
       appBar: AppBar(
@@ -426,12 +420,12 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
                     .push(MaterialPageRoute(builder: (context) => NewsPage()));
               },
               icon: Icon(Icons.newspaper_sharp)),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Insurancepage()));
-              },
-              icon: Icon(Icons.cases_rounded)),
+          // IconButton(
+          //     onPressed: () {
+          //       Navigator.of(context).push(
+          //           MaterialPageRoute(builder: (context) => Insurancepage()));
+          //     },
+          //     icon: Icon(Icons.cases_rounded)),
           IconButton(
               onPressed: () {
                 _showBatteryAlert(context);
@@ -555,19 +549,19 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
                   disasters: disasters,
                 )));
         break;
-      case 6:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => MyProblemsPage()));
-        break;
-      case 7:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ProvisionListPage()));
-      case 8:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => placeScreen1()));
-      case 9:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LeaderboardPage()));
+      // case 6:
+      //   Navigator.of(context)
+      //       .push(MaterialPageRoute(builder: (context) => MyProblemsPage()));
+      //   break;
+      // case 7:
+      //   Navigator.of(context)
+      //       .push(MaterialPageRoute(builder: (context) => ProvisionListPage()));
+      // case 8:
+      //   Navigator.of(context)
+      //       .push(MaterialPageRoute(builder: (context) => placeScreen1()));
+      // case 9:
+      //   Navigator.of(context)
+      //       .push(MaterialPageRoute(builder: (context) => LeaderboardPage()));
     }
   }
 }
