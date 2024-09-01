@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'Uicomponents.dart';
-// import 'package:sr/views/admin_online/placeScreen.dart';
-// import 'package:sr/views/ads.dart';
+import 'package:sr/views/admin_online/placeScreen.dart';
+import '../Uicomponents.dart';
+import '../ads.dart';
 
 class Buy extends StatelessWidget {
   Future<void> _deleteProduct(String id) async {
@@ -59,7 +58,7 @@ class Buy extends StatelessWidget {
         // ],
       ),
       body: Column(children: [
-        // MyBannerAdWidget(),
+        MyBannerAdWidget(),
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
             stream:

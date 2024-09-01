@@ -73,7 +73,7 @@ ButtonStyle buttonStyle({Color? bgcolor}) {
 
 String GetDate(String dateString) {
   DateTime dateTime = DateTime.parse(dateString);
-  String formattedDate = DateFormat('d MMMM').format(dateTime);
+  String formattedDate = DateFormat('MMM d').format(dateTime);
   return formattedDate;
 }
 

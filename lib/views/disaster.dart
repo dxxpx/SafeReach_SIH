@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sr/views/user_online/Uicomponents.dart';
-// import 'package:hackfest/views/ads.dart';
+import 'package:sr/views/ads.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sr/views/Uicomponents.dart';
 
 class DisasterInfo {
   final String title;
@@ -222,7 +222,7 @@ class DisasterInfoPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // MyBannerAdWidget(),
+          MyBannerAdWidget(),
           Expanded(
             child: ListView.builder(
               itemCount: disasters.length,

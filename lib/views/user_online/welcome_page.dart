@@ -1,23 +1,29 @@
+import 'dart:convert';
 import 'package:battery/battery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sr/services/service_imp.dart';
-// import 'package:sr/views/disaster.dart';
+import 'package:sr/views/Uicomponents.dart';
+import 'package:sr/views/admin_online/placeScreen.dart';
+import 'package:sr/views/dialog_flow.dart';
+import 'package:sr/views/disaster.dart';
 import 'package:sr/views/emergency_contact.dart';
 import 'package:sr/views/user_offline/user_offline.dart';
-// import 'package:sr/views/user_online/battery.dart';
+import 'package:sr/views/user_online/battery.dart';
 import 'package:sr/views/user_online/buy.dart';
+import 'package:sr/views/user_online/leaderboardPage.dart';
 import 'package:sr/views/user_online/maps_markers.dart';
+import 'package:sr/views/user_online/my_problems.dart';
 import 'package:sr/views/user_online/register_page.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:sr/views/user_online/rescue.dart';
-
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import '../admin_online/add_provisions.dart';
+import 'package:sr/views/admin_online/showProvisions.dart';
 import '../datascrape.dart';
-import '../disaster.dart';
-import 'Uicomponents.dart';
-//Added components page
+import '../floodChecker.dart';
+import 'insurancePage.dart';
 
 class WelcomePage extends StatefulWidget {
   @override
@@ -29,11 +35,11 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Position userPosition;
   final double radiusInKm = 10.0;
+  late String currentloc = '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _showBatteryAlert(BuildContext context) async {
     int batteryLevel = await _battery.batteryLevel;
-
     if (batteryLevel <= 100) {
       showDialog(
         context: context,
@@ -41,7 +47,7 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
           return AlertDialog(
             title: Text('Battery Status'),
             actions: [
-              // BatteryIndicator(battery: _battery),
+              BatteryIndicator(battery: _battery),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -57,7 +63,7 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
 
   final User? user = FirebaseAuth.instance.currentUser;
   int _selectedIndex = 0;
-  Color _statusColor = Colors.green; // Default color is red
+  Color _statusColor = Colors.green;
 
   void _checkInternetStatus() async {
     print(await InternetConnectionCheckerPlus().hasConnection);
@@ -79,30 +85,32 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
     'Profile Details',
   ];
 
-  Future<void> _getCurrentLocationAndSave() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    String location = '${position.latitude}, ${position.longitude}';
-    Service_Imp().storelocation(location);
-    User? user = _auth.currentUser;
-    if (user != null) {
-      await _firestore.collection('users').doc(user.uid).update({
-        'location': location,
-      });
-      setState(() {
-        // Update the UI with the new location
-      });
-    }
-  }
-
   Future<void> getCurrentLocationAndSave() async {
     print("Current Location loading...");
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     userPosition = position;
-    location = '${position.latitude}, ${position.longitude}';
-    print('Current Location: $location');
+    // checkFloodConditions(
+    //     latitude: '${position.latitude}', longitude: '${position.longitude}');
+    currentloc = '${position.latitude}, ${position.longitude}';
+    print('Current Location: $currentloc');
     setState(() {});
+  }
+
+  String deobfuscate_Mask_Aadhar(String obfuscatedAadhar) {
+    String base64Encoded = obfuscatedAadhar.split('').reversed.join('');
+    String deobfuscated = utf8.decode(base64.decode(base64Encoded));
+    return maskAadhar(deobfuscated);
+  }
+
+  String maskAadhar(String aadharNumber) {
+    // Ensure the Aadhar number is exactly 12 digits long
+    if (aadharNumber.length == 12) {
+      // Mask all but the last 3 digits
+      return aadharNumber.replaceRange(0, 9, '*' * 9);
+    } else {
+      throw ArgumentError('Aadhar number must be 12 digits long');
+    }
   }
 
   Widget _buildProfileDetails() {
@@ -147,10 +155,10 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
 
               return profilecard(
                   data['name'],
-                  data['adhar'],
+                  deobfuscate_Mask_Aadhar(data['adhar']),
                   data['people'].toString(),
                   humanReadableLocation,
-                  _getCurrentLocationAndSave,
+                  getCurrentLocationAndSave,
                   data['primaryphno'],
                   data['secondaryphno']);
             },
@@ -294,12 +302,49 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
     );
   }
 
-  void _addToDistressTable(String type) {
+  Future<void> addLocationFieldToDocuments() async {
+    await getCurrentLocationAndSave();
+    List<String> parts = currentloc.split(',');
+    String lat = parts[0].trim();
+    String long = parts[1].trim();
+    bool? isFlooded =
+        await checkFloodConditions(latitude: lat, longitude: long);
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      CollectionReference distressCollection = firestore.collection('distress');
+      QuerySnapshot querySnapshot = await distressCollection.get();
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        String docId = doc.id;
+        await distressCollection.doc(docId).update({
+          'isFlooded': isFlooded,
+          'location': currentloc,
+        });
+      }
+
+      print('Successfully added isFlooded field to all documents.');
+    } catch (e) {
+      print('Error adding location field: $e');
+    }
+  }
+
+  void _addToDistressTable(String type) async {
+    await getCurrentLocationAndSave();
+    // addLocationFieldToDocuments();
+    List<String> parts = currentloc.split(',');
+    String lat = parts[0].trim();
+    String long = parts[1].trim();
+    bool? isFlooded =
+        await checkFloodConditions(latitude: lat, longitude: long);
+    print(
+        'IS FLOODED : ${checkFloodConditions(latitude: lat, longitude: long)}');
+
     FirebaseFirestore.instance.collection('distress').add({
       'userID': user!.uid,
       'type': type,
       'time': DateTime.now(),
-      // Add more fields as needed
+      'location': await currentloc,
+      'isFlooded': isFlooded
     });
   }
 
@@ -398,13 +443,13 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
               child: Icon(Icons.call),
             ),
           ),
-          // FloatingActionButton(
-          //   onPressed: () {
-          //     Navigator.of(context)
-          //         .push(MaterialPageRoute(builder: (context) => DialogFlow()));
-          //   },
-          //   child: Icon(Icons.chat_rounded),
-          // ),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => DialogFlow()));
+            },
+            child: Icon(Icons.chat_rounded),
+          ),
         ],
       ),
       appBar: AppBar(
@@ -420,12 +465,12 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
                     .push(MaterialPageRoute(builder: (context) => NewsPage()));
               },
               icon: Icon(Icons.newspaper_sharp)),
-          // IconButton(
-          //     onPressed: () {
-          //       Navigator.of(context).push(
-          //           MaterialPageRoute(builder: (context) => Insurancepage()));
-          //     },
-          //     icon: Icon(Icons.cases_rounded)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => Insurancepage()));
+              },
+              icon: Icon(Icons.cases_rounded)),
           IconButton(
               onPressed: () {
                 _showBatteryAlert(context);
@@ -455,11 +500,11 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
       ),
       body: _buildPage(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Colors.grey, //
-        selectedItemColor: appblue, // <-- add this
-
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: appblue,
         backgroundColor: Colors.black12,
         currentIndex: _selectedIndex,
+        showUnselectedLabels: true,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
@@ -549,19 +594,19 @@ class _WelcomePageState extends State with SingleTickerProviderStateMixin {
                   disasters: disasters,
                 )));
         break;
-      // case 6:
-      //   Navigator.of(context)
-      //       .push(MaterialPageRoute(builder: (context) => MyProblemsPage()));
-      //   break;
-      // case 7:
-      //   Navigator.of(context)
-      //       .push(MaterialPageRoute(builder: (context) => ProvisionListPage()));
-      // case 8:
-      //   Navigator.of(context)
-      //       .push(MaterialPageRoute(builder: (context) => placeScreen1()));
-      // case 9:
-      //   Navigator.of(context)
-      //       .push(MaterialPageRoute(builder: (context) => LeaderboardPage()));
+      case 6:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => MyProblemsPage()));
+        break;
+      case 7:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => ProvisionListPage()));
+      case 8:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => placeScreen1()));
+      case 9:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LeaderboardPage()));
     }
   }
 }

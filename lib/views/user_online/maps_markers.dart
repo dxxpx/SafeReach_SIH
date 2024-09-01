@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../services/service_imp.dart';
-import 'Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class GoogleMapScreen extends StatefulWidget {
   final double lat;

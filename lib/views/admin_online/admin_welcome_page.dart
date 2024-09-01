@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sr/services/service_imp.dart';
-// import 'package:sr/views/admin_online/problems_page.dart';
+import 'package:sr/views/admin_online/problems_page.dart';
 import 'package:sr/views/admin_online/read_messages.dart';
 import 'package:sr/views/admin_online/show_products.dart';
 import 'package:sr/views/admin_online/updates.dart';
+import 'package:sr/views/Uicomponents.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../datascrape.dart';
-import '../user_online/Uicomponents.dart';
 
 class AdminWelcomePage extends StatefulWidget {
   @override
@@ -25,23 +26,23 @@ class _AdminWelcomePageState extends State<AdminWelcomePage> {
         ),
         backgroundColor: appblue,
         iconTheme: backButton(color: Colors.white),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProductListPage()));
-              },
-              icon: Icon(
-                Icons.shopping_cart,
-                color: Colors.white,
-              )),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => NewsPage()));
-              },
-              icon: Icon(Icons.newspaper_sharp))
-        ],
+        //   actions: [
+        //     IconButton(
+        //         onPressed: () {
+        //           Navigator.of(context).push(
+        //               MaterialPageRoute(builder: (context) => ProductListPage()));
+        //         },
+        //         icon: Icon(
+        //           Icons.shopping_cart,
+        //           color: Colors.white,
+        //         )),
+        //     // IconButton(
+        //     //     onPressed: () {
+        //     //       Navigator.of(context)
+        //     //           .push(MaterialPageRoute(builder: (context) => NewsPage()));
+        //     //     },
+        //     //     icon: Icon(Icons.newspaper_sharp))
+        //   ],
       ),
       body: Column(
         children: [

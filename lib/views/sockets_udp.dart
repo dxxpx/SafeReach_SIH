@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sr/views/user_online/Uicomponents.dart';
+import 'package:sr/views/Uicomponents.dart';
 
 class UdpSender extends StatefulWidget {
   @override

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sr/views/admin_online/admin_page.dart';
@@ -8,7 +12,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:provider/provider.dart';
 import 'package:sr/views/notifications.dart';
 import '../../viewmodels/changes.dart';
-import 'Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -27,6 +31,37 @@ class _RegisterState extends State<Register> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  String obfuscateAadhar(String aadharNumber) {
+    String base64Encoded = base64.encode(utf8.encode(aadharNumber));
+    String obfuscated = base64Encoded.split('').reversed.join('');
+    return obfuscated;
+  }
+
+  Future<void> encryptAndUpdateAadhaar() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      CollectionReference usersCollection = firestore.collection('users');
+      QuerySnapshot querySnapshot = await usersCollection.get();
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        String aadhaarNumber = doc['adhar'] ?? '';
+
+        if (aadhaarNumber.isNotEmpty) {
+          String encryptedAadhaar = obfuscateAadhar(aadhaarNumber);
+          print(encryptedAadhaar);
+          await usersCollection.doc(doc.id).update({
+            'adhar': encryptedAadhaar,
+          });
+          print('${doc['userId']} - ${doc['adhar']}');
+        }
+      }
+
+      print('Successfully encrypted and updated Aadhaar numbers.');
+    } catch (e) {
+      print('Error encrypting and updating Aadhaar numbers: $e');
+    }
   }
 
   Future<String> _getCurrentLocation() async {
@@ -133,6 +168,8 @@ class _RegisterState extends State<Register> {
     TextEditingController locationController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController aadharController = TextEditingController();
+    String encryptedAadhar = '';
 
     return Stack(
       children: [
@@ -273,7 +310,8 @@ class _RegisterState extends State<Register> {
                       SizedBox(width: 29),
                       ElevatedButton(
                         style: buttonStyle(),
-                        onPressed: () {
+                        onPressed: () async {
+                          // await encryptAndUpdateAadhaar();
                           Navigator.push(
                             context,
                             MaterialPageRoute(

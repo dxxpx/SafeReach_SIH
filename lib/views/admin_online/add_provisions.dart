@@ -1,18 +1,19 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Uicomponents.dart';
 
-class ProductFormPage extends StatefulWidget {
+class ProvisionFormPage extends StatefulWidget {
   @override
-  _ProductFormPageState createState() => _ProductFormPageState();
+  _ProvisionFormPageState createState() => _ProvisionFormPageState();
 }
 
-class _ProductFormPageState extends State<ProductFormPage> {
+class _ProvisionFormPageState extends State<ProvisionFormPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
@@ -39,25 +40,25 @@ class _ProductFormPageState extends State<ProductFormPage> {
     // Upload image to Firebase Storage
     String fileName = _image!.path.split('/').last;
     UploadTask uploadTask = FirebaseStorage.instance
-        .ref('product_images/$fileName')
+        .ref('provisions_image/$fileName')
         .putFile(_image!);
     TaskSnapshot taskSnapshot = await uploadTask;
     String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
     // Add product to Firestore
-    await FirebaseFirestore.instance.collection('products').add({
+    await FirebaseFirestore.instance.collection('provisions').add({
       'name': _nameController.text,
       'location': _locationController.text,
-      'stock': int.parse(_stockController.text),
+      'Stock': int.parse(_stockController.text),
       'price': _priceController.text.toString(),
       'imageUrl': imageUrl,
+      'uid': FirebaseAuth.instance.currentUser!.uid,
     });
 
     Navigator.of(context).pop();
-    Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Product added Successfully'),
+        content: Text('Provisions added Successfully'),
       ),
     );
   }
@@ -67,7 +68,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Product',
+          'Add Provision',
           style: appbar_Tstyle,
         ),
         backgroundColor: appblue,
@@ -80,13 +81,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                "Product Name :",
+                "Provision Name :",
                 style: heading_Tstlye(size: 20),
               ),
               SizedBox(height: 3),
               TextFormField(
                   controller: _nameController,
-                  decoration: t_boxdecor(hintText: "Enter your Product Name")),
+                  decoration:
+                      t_boxdecor(hintText: "Enter your Provision Name")),
               SizedBox(height: 20),
               Text(
                 "Stock Available :",
@@ -101,7 +103,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               SizedBox(height: 20),
               Text(
-                "Product Price :",
+                "Provision Price :",
                 style: heading_Tstlye(size: 20),
               ),
               SizedBox(height: 3),
@@ -122,7 +124,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               SizedBox(height: 20),
               Text(
-                "Upload Product Image :",
+                "Upload Provision Image :",
                 style: heading_Tstlye(size: 20),
               ),
               SizedBox(height: 3),
@@ -165,7 +167,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   style: buttonStyle(),
                   onPressed: _submit,
                   child: Text(
-                    'Add Product',
+                    'Add Provision',
                     style: buttonTstyle(),
                   ),
                 ),

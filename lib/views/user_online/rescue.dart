@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import 'package:hackfest/views/ads.dart';
+import 'package:sr/views/ads.dart';
 import 'package:sr/services/service_imp.dart';
+import 'package:sr/views/Uicomponents.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'Uicomponents.dart';
 
 class Rescue extends StatefulWidget {
   @override
@@ -22,11 +21,13 @@ class _RescueState extends State<Rescue> {
       ),
       body: Column(
         children: [
-          // MyBannerAdWidget(),
+          MyBannerAdWidget(),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('distress').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('distress')
+                  .orderBy('time', descending: true)
+                  .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {

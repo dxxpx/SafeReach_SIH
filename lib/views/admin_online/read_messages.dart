@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:sr/services/service_imp.dart';
+import 'package:sr/views/Uicomponents.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../user_online/Uicomponents.dart';
 
 class GetMessages extends StatefulWidget {
   const GetMessages({Key? key}) : super(key: key);

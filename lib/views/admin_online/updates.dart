@@ -4,8 +4,7 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sr/services/service_imp.dart';
 import 'package:sr/views/admin_online/add_warning_page.dart';
-
-import '../user_online/Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class Updates extends StatefulWidget {
   const Updates({Key? key}) : super(key: key);

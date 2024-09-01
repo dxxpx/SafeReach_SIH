@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:telephony/telephony.dart';
 
 import '../../viewmodels/changes.dart';
-import 'Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class PrimaryPhone extends StatefulWidget {
   @override
@@ -141,7 +141,7 @@ class _PrimaryPhoneState extends State<PrimaryPhone> {
                 Text('Enter Your Confirmation Code', style: heading_Tstlye()),
                 SizedBox(height: 10),
                 Text(
-                  'We have sent a confirmation code to your phone number',
+                  'We have sent a confirmation code to ${_phoneController.text}',
                   style: content_Tstlye(),
                   textAlign: TextAlign.center,
                 ),

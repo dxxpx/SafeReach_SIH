@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sr/views/admin_online/add_products.dart';
+import 'package:sr/views/admin_online/add_provisions.dart';
 import 'places.dart';
 import 'placeScreen.dart';
 import '../Uicomponents.dart';
-import 'add_provisions.dart';
-import 'showProvisions.dart';
 
-class ProductListPage extends StatelessWidget {
+class ProvisionListPage extends StatelessWidget {
   Future<void> _deleteProduct(String id) async {
-    await FirebaseFirestore.instance.collection('products').doc(id).delete();
+    await FirebaseFirestore.instance.collection('provisions').doc(id).delete();
   }
 
   Future<void> _editStock(
@@ -30,10 +30,10 @@ class ProductListPage extends StatelessWidget {
           TextButton(
             onPressed: () async {
               await FirebaseFirestore.instance
-                  .collection('products')
+                  .collection('provisions')
                   .doc(id)
                   .update({
-                'stock': int.parse(_stockController.text),
+                'Stock': int.parse(_stockController.text),
               });
               Navigator.of(context).pop();
             },
@@ -44,14 +44,16 @@ class ProductListPage extends StatelessWidget {
     );
   }
 
-  Widget Product(
+  Widget ProvisionTile(
       {required BuildContext context,
-      required String productName,
-      required String productId,
+      required String provId,
+      required String provName,
       required String imagelink,
-      required String productPrice,
+      required String provPrice,
       required String location,
-      required int stockno}) {
+      required int stockno,
+      required String provisionUserId}) {
+    final currentUser = FirebaseAuth.instance.currentUser;
     return Card(
       elevation: 10,
       color: Colors.blue.shade50,
@@ -69,7 +71,7 @@ class ProductListPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              productName,
+              provName,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -90,20 +92,22 @@ class ProductListPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Rs.$productPrice',
+              'Rs.$provPrice',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                  onPressed: () => _deleteProduct(productId),
-                  icon: Icon(Icons.delete)),
-              IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () =>
-                      _editStock(context, productId, stockno as int))
+              if (currentUser?.uid == provisionUserId)
+                IconButton(
+                    onPressed: () => _deleteProduct(provId),
+                    icon: Icon(Icons.delete)),
+              if (currentUser?.uid == provisionUserId)
+                IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () =>
+                        _editStock(context, provId, stockno as int))
             ],
           )
         ],
@@ -116,81 +120,54 @@ class ProductListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Products',
+          'Provisions',
           style: appbar_Tstyle,
         ),
         backgroundColor: appblue,
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => placeScreen1()));
-              },
-              child: Text('Places'))
-        ],
         iconTheme: backButton(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('products').snapshots(),
+        stream: FirebaseFirestore.instance.collection('provisions').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
-          final products = snapshot.data!.docs;
+          final Provisions = snapshot.data!.docs;
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(8.0),
             child: Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: List.generate(products.length, (index) {
-                final product = products[index];
+              children: List.generate(Provisions.length, (index) {
+                final provision = Provisions[index];
                 return SizedBox(
                   width: (MediaQuery.of(context).size.width - 24) /
                       2, // Adjust width for 2 columns with spacing
-                  child: Product(
+                  child: ProvisionTile(
                       context: context,
-                      productName: product['name'],
-                      productId: product.id,
-                      imagelink: product['imageUrl'],
-                      location: product['location'],
-                      stockno: product['stock'],
-                      productPrice: product['price']),
+                      provName: provision['name'],
+                      provId: provision.id,
+                      imagelink: provision['imageUrl'],
+                      location: provision['location'],
+                      stockno: provision['Stock'],
+                      provPrice: provision['price'],
+                      provisionUserId: provision['uid']),
                 );
               }),
             ),
           );
         },
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 28.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProvisionListPage()));
-              },
-              child: Icon(
-                Icons.local_grocery_store,
-                color: Colors.red,
-              ),
-            ),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ProductFormPage()));
-            },
-            child: Icon(
-              Icons.add,
-              color: Colors.red,
-            ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ProvisionFormPage()));
+        },
+        child: Icon(
+          Icons.add,
+          color: Colors.red,
+        ),
       ),
     );
   }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:telephony/telephony.dart';
 
-import '../user_online/Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class AddWarningPage extends StatefulWidget {
   @override

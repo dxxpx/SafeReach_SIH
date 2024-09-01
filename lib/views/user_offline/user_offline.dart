@@ -9,7 +9,7 @@ import 'package:open_settings_plus/core/open_settings_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:telephony/telephony.dart';
 import '../../viewmodels/changes.dart';
-import '../user_online/Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class UserOffline extends StatefulWidget {
   @override

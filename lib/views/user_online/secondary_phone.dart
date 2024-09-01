@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:telephony/telephony.dart';
 
 import '../../viewmodels/changes.dart';
-import 'Uicomponents.dart';
+import '../Uicomponents.dart';
 
 class SecondaryPhone extends StatefulWidget {
   @override
